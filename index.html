@@ -86,7 +86,8 @@ p{margin:0}
 .portrait{position:relative;justify-self:end;width:min(100%,440px)}
 .frame{position:relative;background:var(--surface);border:3px solid var(--ink);box-shadow:10px 10px 0 var(--accent);aspect-ratio:1/1;overflow:hidden}
 .frame::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--surface-2) 1px,transparent 1px),linear-gradient(90deg,var(--surface-2) 1px,transparent 1px);background-size:calc(100%/14) calc(100%/14);opacity:.9}
-#face{position:relative;display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+#face{position:relative;display:block;width:100%;height:100%;object-fit:cover}
+.pixels{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;background:var(--surface)}
 .caption{display:flex;justify-content:space-between;align-items:baseline;margin-top:1.3rem;font-size:.95rem;color:var(--muted)}
 .caption b{font-family:var(--display);font-weight:600;font-size:1.15rem;color:var(--ink)}
 .caption a{text-decoration-thickness:2px;text-underline-offset:3px}
@@ -224,7 +225,7 @@ section.block{padding:var(--section) 0}
 
       <figure class="portrait" style="margin:0">
         <div class="frame">
-          <canvas id="face" width="56" height="56" role="img" aria-label="Pixel art portrait of Ediz"></canvas>
+          <img id="face" src="avatar.jpg" width="400" height="400" alt="Manga-style samurai with a bandaged head, drawn over old newspaper print">
         </div>
         <figcaption class="caption">
           <b>aka Viper</b>
@@ -362,32 +363,38 @@ section.block{padding:var(--section) 0}
 
 <script>
 (function(){
-  var DATA = {"pal":["#140c0a","#dfbfaf","#b99d8f","#8d7a71","#9f5c4a","#6c5c55","#54433e","#8a4439","#bb725c","#d9886b","#6e2e23","#2b1b1a","#f8e9e0"],"rows":["........................................................","........................................................","........................................................","........................................................","........................................................","........................................................","........................................................","....................aaaaaaaa............................","..................aabccbbbbcaa..........................","................aacbbccccbbcbcaa........................","................acccdddecccccbbba.......................","...............addfgggggefddcbbca.......................","..............aehhhhehhhhfhffeicba......................",".............afhijjjjjiiiiiiiiiijca.....................",".............ahijjjjjjjjjjjjjjjjjia.....................",".............aijjjjjjjjjjjjjjjjjjja.....................",".............ajjjjjjjjjjjjjjjjjjbba.....................",".............ajjjjjjjjjjjjjjjjjjbba.....................",".............ajjjjjjjjjjjjjjjjjjbba.....................",".............ajjiijjjjjjjjjjjjjjbba.....................",".............ajhgggheiijjjiieeicbba.....................",".............aiieehkkhejjjehggggeca.....................","...........aajjjjiieeeijjiehheeeeia.....................","..........afdjjieehkheijjihhhheeija.....................","..........aejjjikhkkheijjehhglgheja.....................",".........alhijjjieeeeiijjieehkgheiba....................",".........alhijjjjjjjjjjjjieiiieiijba....................",".........alkjjjjjjjjjjjjjjiiiiiijbba....................",".........alkijjjjjjjjjjjjjiiiiiiijba....................",".........alljjjjjjjjjjjjjjjiiiiiijcla...................",".........alljjjjjjjjjiijiiiiiiiiijcla...................",".........allhjjjjjjjieeieheeiiiiijila...................",".........alllijjjjjjiiiiieeiiiiijjgla...................",".........alllejjjjjjiiiiiieiiiiijclla...................",".........alllejjjjjjjiiiiiiiiiijjdlla...................",".........algdhijjjjjiehhhheiiiijjccfda..aa..............",".........agdfgijjjiehhkkkkkheiijiddddcaaffa.............",".........addgliijiiiehhhhhhheiijccffffdcgla.............",".........adflleiiiiiehhhhhheiiiibmmfggfcclla............","........addglleeiiieeehhhheeeiiimcmbllgfcfla............",".......afddgglheeiiiieehhheeeiiebbmmfglgbcla............","......adddfgglheheiiiieeeeeeeeeecbmmbfgdbblla...........","...aaabfddfgglkeeheeieeeeeeeehehcmmmmmcmbccda...........",".aambdcdddggflkhhhhheeeeeeehhhhfbmmmmmmcfcmmmaaaaa......","ambcbddddfggfglkhhhhhhhhhhhhhhkdbbbmmbdggmmmmmmmmmaa....","abcccfdddflggglkkhhhhhkkkkhhhkkcbbmmcflgdmmmmmmmmmmma...","accccgfddflgggglkkhhhhhkkkhhkkfcmmbdfllgbmmmmmmmmmmma...","acccdgfddfllgggglkkkkkkkkkkkkkdcbcfggllfmmmmmmmmmmmma...","accdfgfdddflggggglkkkkkkkkkklfdcdfgffglfbmmmmmmmmmmba...","adddggfffffglggggglkkkkkkkkkgfddggfffdlgbmmmmbmmmmmba...","adfdggfggfffgggggggkkkkkkkkffffglffffbggcmmmbbmmbmmma...","affdfgffggffffggggggllllllgfffglgfffcbfgdbmmbbbbbmmma...","affdfgfffgggffffffffgggggfffgglgdfffbmcddbbmbcbbcmmma...","agfffgggffggllgfffffffffffggglldcffdbmmcdbbbbcbbcbmma...","afffffggffffglllgggglgfggggfglgcdffcbmmmcbbbbcbbcmmba...","afffffggggfffgglllgglggggggfdgccdfdbbmmmcbbbbccccbmba..."]};
-  var cv = document.getElementById('face');
-  var ctx = cv.getContext('2d');
-  var px = [];
-  DATA.rows.forEach(function(row, y){
-    for (var x = 0; x < row.length; x++){
-      var ch = row[x];
-      if (ch !== '.') px.push({x:x, y:y, c:DATA.pal[ch.charCodeAt(0) - 97]});
-    }
-  });
-  function draw(p){ ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, 1, 1); }
-
+  var img = document.getElementById('face');
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce){ px.forEach(draw); return; }
+  if (reduce) return;
 
-  // Build the portrait top to bottom, with some scatter so it reads as pixels arriving
-  px.forEach(function(p){ p.k = p.y + Math.random() * 14; });
-  px.sort(function(a, b){ return a.k - b.k; });
+  // Cover the photo with a canvas that shows it blocky first, then sharper, then gets out of the way
+  var cv = document.createElement('canvas');
+  cv.className = 'pixels';
+  cv.setAttribute('aria-hidden', 'true');
+  img.parentNode.appendChild(cv);
+  var ctx = cv.getContext('2d');
+  var small = document.createElement('canvas');
+  var sctx = small.getContext('2d');
+  var steps = [6, 10, 16, 26, 42, 70, 112];
 
-  var i = 0, total = px.length, frames = 70, per = Math.ceil(total / frames);
-  function step(){
-    var end = Math.min(total, i + per);
-    for (; i < end; i++) draw(px[i]);
-    if (i < total) requestAnimationFrame(step);
+  function frame(n){
+    small.width = small.height = n;
+    sctx.drawImage(img, 0, 0, n, n);
+    cv.width = cv.height = n;
+    ctx.drawImage(small, 0, 0);
   }
-  setTimeout(function(){ requestAnimationFrame(step); }, 250);
+  function run(){
+    var i = 0;
+    (function next(){
+      if (i < steps.length){ frame(steps[i++]); setTimeout(next, 110); }
+      else cv.remove();
+    })();
+  }
+  if (img.complete && img.naturalWidth) setTimeout(run, 250);
+  else {
+    img.addEventListener('load', function(){ setTimeout(run, 250); });
+    img.addEventListener('error', function(){ cv.remove(); });
+  }
 })();
 
 (function(){
